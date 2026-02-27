@@ -111,6 +111,26 @@
     "message": "右から左",
     "description": "Right then left gesture"
   },
+  "upThenDownThenUpThenDown": {
+    "message": "上から下から上から下",
+    "description": "Up then down then up then down gesture"
+  },
+  "rightThenUpThenDown": {
+    "message": "右から上から下",
+    "description": "Right then up then down gesture"
+  },
+  "leftThenUpThenDown": {
+    "message": "左から上から下",
+    "description": "Left then up then down gesture"
+  },
+  "upThenDownThenUp": {
+    "message": "上から下から上",
+    "description": "Up then down then up gesture"
+  },
+  "downThenUpThenDown": {
+    "message": "下から上から下",
+    "description": "Down then up then down gesture"
+  },
   "back": {
     "message": "戻る",
     "description": "Back action"
@@ -948,4 +968,3 @@
     "description": "分割表示、下半分に新しいウィンドウ"
   }
 } 
-

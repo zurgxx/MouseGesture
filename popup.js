@@ -146,6 +146,11 @@ const defaultSettings = {
   gestureDownThenUpAction: 'scrollToTop',
   gestureLeftThenRightAction: 'closeTab',
   gestureRightThenLeftAction: 'reopenClosedTab',
+  gestureUpThenDownThenUpThenDownAction: 'noAction',
+  gestureRightThenUpThenDownAction: 'noAction',
+  gestureLeftThenUpThenDownAction: 'noAction',
+  gestureUpThenDownThenUpAction: 'noAction',
+  gestureDownThenUpThenDownAction: 'noAction',
   disabledSites: []
 };
 
@@ -469,6 +474,11 @@ function loadSettings() {
       gestureDownThenUpAction: 'scrollToTop',
       gestureLeftThenRightAction: 'closeTab',
       gestureRightThenLeftAction: 'reopenClosedTab',
+      gestureUpThenDownThenUpThenDownAction: 'noAction',
+      gestureRightThenUpThenDownAction: 'noAction',
+      gestureLeftThenUpThenDownAction: 'noAction',
+      gestureUpThenDownThenUpAction: 'noAction',
+      gestureDownThenUpThenDownAction: 'noAction',
       disabledSites: []
     }, function(items) {
       // 应用鼠标手势设置
@@ -533,6 +543,11 @@ function loadSettings() {
       document.getElementById('gesture-downThenUp-action').value = items.gestureDownThenUpAction || 'scrollToTop';
       document.getElementById('gesture-leftThenRight-action').value = items.gestureLeftThenRightAction || 'closeTab';
       document.getElementById('gesture-rightThenLeft-action').value = items.gestureRightThenLeftAction || 'reopenClosedTab';
+      document.getElementById('gesture-upThenDownThenUpThenDown-action').value = items.gestureUpThenDownThenUpThenDownAction || 'noAction';
+      document.getElementById('gesture-rightThenUpThenDown-action').value = items.gestureRightThenUpThenDownAction || 'noAction';
+      document.getElementById('gesture-leftThenUpThenDown-action').value = items.gestureLeftThenUpThenDownAction || 'noAction';
+      document.getElementById('gesture-upThenDownThenUp-action').value = items.gestureUpThenDownThenUpAction || 'noAction';
+      document.getElementById('gesture-downThenUpThenDown-action').value = items.gestureDownThenUpThenDownAction || 'noAction';
       
       // 自定义行为：禁用网站列表
       const disabledSitesEl = document.getElementById('disabled-sites-list');
@@ -924,6 +939,11 @@ function getSettingsSnapshot() {
     gestureDownThenUpAction: document.getElementById('gesture-downThenUp-action').value,
     gestureLeftThenRightAction: document.getElementById('gesture-leftThenRight-action').value,
     gestureRightThenLeftAction: document.getElementById('gesture-rightThenLeft-action').value,
+    gestureUpThenDownThenUpThenDownAction: document.getElementById('gesture-upThenDownThenUpThenDown-action').value,
+    gestureRightThenUpThenDownAction: document.getElementById('gesture-rightThenUpThenDown-action').value,
+    gestureLeftThenUpThenDownAction: document.getElementById('gesture-leftThenUpThenDown-action').value,
+    gestureUpThenDownThenUpAction: document.getElementById('gesture-upThenDownThenUp-action').value,
+    gestureDownThenUpThenDownAction: document.getElementById('gesture-downThenUpThenDown-action').value,
     disabledSites: (document.getElementById('disabled-sites-list')?.value || '').split(/\n/).map(s => s.trim()).filter(Boolean)
   };
 }
@@ -1148,6 +1168,9 @@ function importSettings(settings) {
       'gestureRightThenDownAction', 'gestureUpThenLeftAction', 'gestureUpThenRightAction',
       'gestureDownThenLeftAction', 'gestureLeftThenDownAction', 'gestureUpThenDownAction',
       'gestureDownThenUpAction', 'gestureLeftThenRightAction', 'gestureRightThenLeftAction',
+      'gestureUpThenDownThenUpThenDownAction', 'gestureRightThenUpThenDownAction',
+      'gestureLeftThenUpThenDownAction', 'gestureUpThenDownThenUpAction',
+      'gestureDownThenUpThenDownAction',
       'disabledSites'
     ];
     
@@ -1203,6 +1226,27 @@ function displayExtensionVersion() {
   }
 }
 
+// 新增手势复用已有动作选项，避免重复维护大段HTML
+function populateExtendedGestureActionOptions() {
+  const sourceSelect = document.getElementById('gesture-left-action');
+  if (!sourceSelect) return;
+  const optionHtml = sourceSelect.innerHTML;
+  const extendedSelectIds = [
+    'gesture-upThenDownThenUpThenDown-action',
+    'gesture-rightThenUpThenDown-action',
+    'gesture-leftThenUpThenDown-action',
+    'gesture-upThenDownThenUp-action',
+    'gesture-downThenUpThenDown-action'
+  ];
+  extendedSelectIds.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.innerHTML = optionHtml;
+      el.value = 'noAction';
+    }
+  });
+}
+
 // 初始化界面和事件监听
 document.addEventListener('DOMContentLoaded', function() {
   // 初始化DOM元素引用
@@ -1226,6 +1270,7 @@ document.addEventListener('DOMContentLoaded', function() {
   importFileInput.style.display = 'none';
   document.body.appendChild(importFileInput);
   themeToggle = document.getElementById('theme-toggle');
+  populateExtendedGestureActionOptions();
 
   // 加载设置
   loadSettings();
@@ -1371,7 +1416,10 @@ document.addEventListener('DOMContentLoaded', function() {
     'gesture-downThenRight-action', 'gesture-leftThenUp-action', 'gesture-rightThenUp-action',
     'gesture-rightThenDown-action', 'gesture-upThenLeft-action', 'gesture-upThenRight-action',
     'gesture-downThenLeft-action', 'gesture-leftThenDown-action', 'gesture-upThenDown-action',
-    'gesture-downThenUp-action', 'gesture-leftThenRight-action', 'gesture-rightThenLeft-action'
+    'gesture-downThenUp-action', 'gesture-leftThenRight-action', 'gesture-rightThenLeft-action',
+    'gesture-upThenDownThenUpThenDown-action', 'gesture-rightThenUpThenDown-action',
+    'gesture-leftThenUpThenDown-action', 'gesture-upThenDownThenUp-action',
+    'gesture-downThenUpThenDown-action'
   ];
   gestureActionSelectors.forEach(selector => {
     CommonUtils.addChangeListener(selector, saveSettings, 'gesture-save-status');

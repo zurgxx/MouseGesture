@@ -1183,6 +1183,11 @@ function loadSettings() {
       gestureDownThenUpAction: 'scrollToTop',
       gestureLeftThenRightAction: 'closeTab',
       gestureRightThenLeftAction: 'reopenClosedTab',
+      gestureUpThenDownThenUpThenDownAction: 'noAction',
+      gestureRightThenUpThenDownAction: 'noAction',
+      gestureLeftThenUpThenDownAction: 'noAction',
+      gestureUpThenDownThenUpAction: 'noAction',
+      gestureDownThenUpThenDownAction: 'noAction',
       disabledSites: []
     }, (loadedSettings) => {
       if (chrome.runtime.lastError) {
@@ -2412,14 +2417,6 @@ function recognizeGesture() {
     }
   }
   
-  // 检查合并后的方向数量，如果超过两个不同方向，则识别为无效手势
-  if (mergedDirections.length > 2) {
-    console.log('检测到超过两个不同方向的手势，识别为无效手势:', mergedDirections.join(' then '));
-    collectDebugInfo(directions, simplifiedPoints, totalDistance, hasRepetitivePattern, 
-                    repeatingPattern, mergedDirections, '', 0, directionDistances);
-    return ''; // 超过两个方向的手势视为无效
-  }
-  
   // 特殊处理重复的左右或上下模式
   if (hasRepetitivePattern && mergedDirections.length >= 2) {
     // 保留重复左右或上下的模式，不要简化为单一方向
@@ -2444,6 +2441,22 @@ function recognizeGesture() {
       // 返回这个重复模式的字符串表示
       return mergedDirections.join(' then ');
     }
+  }
+
+  // 允许的多方向手势（新增）
+  const supportedMultiDirectionGestures = new Set([
+    'up then down then up then down',
+    'right then up then down',
+    'left then up then down',
+    'up then down then up',
+    'down then up then down'
+  ]);
+  const mergedGesture = mergedDirections.join(' then ');
+  if (mergedDirections.length > 2 && !supportedMultiDirectionGestures.has(mergedGesture)) {
+    console.log('检测到不支持的多方向手势，识别为无效手势:', mergedGesture);
+    collectDebugInfo(directions, simplifiedPoints, totalDistance, hasRepetitivePattern, 
+                    repeatingPattern, mergedDirections, '', 0, directionDistances);
+    return '';
   }
   
   // 如果合并后的方向大于2个，且包含关闭标签页的子模式，则提高判断标准
@@ -2609,6 +2622,11 @@ function recognizeGesture() {
     'right then down', 'up then left', 'up then right',
     'down then left', 'left then down', 'up then down',
     'down then up', 'left then right', 'right then left',
+    'up then down then up then down',
+    'right then up then down',
+    'left then up then down',
+    'up then down then up',
+    'down then up then down',
     'right then right', // 添加新的手势：右右 = 下一页
     'scrollLeft', 'scrollRight', 'forceRefresh'
   ];
@@ -3338,7 +3356,12 @@ function getCustomGestureAction(gesture) {
     'up then down': 'gestureUpThenDownAction',
     'down then up': 'gestureDownThenUpAction',
     'left then right': 'gestureLeftThenRightAction',
-    'right then left': 'gestureRightThenLeftAction'
+    'right then left': 'gestureRightThenLeftAction',
+    'up then down then up then down': 'gestureUpThenDownThenUpThenDownAction',
+    'right then up then down': 'gestureRightThenUpThenDownAction',
+    'left then up then down': 'gestureLeftThenUpThenDownAction',
+    'up then down then up': 'gestureUpThenDownThenUpAction',
+    'down then up then down': 'gestureDownThenUpThenDownAction'
   };
   
   const settingKey = gestureToSetting[gesture];
@@ -3844,6 +3867,13 @@ function handleMouseMove(e) {
             break;
           case 'right then left':
             actionKey = 'reopenTab';
+            break;
+          case 'up then down then up then down':
+          case 'right then up then down':
+          case 'left then up then down':
+          case 'up then down then up':
+          case 'down then up then down':
+            actionKey = 'nextPage';
             break;
           case 'right then right':
             actionKey = 'nextPage';

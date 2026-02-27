@@ -111,6 +111,26 @@
     "message": "Right then Left",
     "description": "Right then left gesture"
   },
+  "upThenDownThenUpThenDown": {
+    "message": "Up then Down then Up then Down",
+    "description": "Up then down then up then down gesture"
+  },
+  "rightThenUpThenDown": {
+    "message": "Right then Up then Down",
+    "description": "Right then up then down gesture"
+  },
+  "leftThenUpThenDown": {
+    "message": "Left then Up then Down",
+    "description": "Left then up then down gesture"
+  },
+  "upThenDownThenUp": {
+    "message": "Up then Down then Up",
+    "description": "Up then down then up gesture"
+  },
+  "downThenUpThenDown": {
+    "message": "Down then Up then Down",
+    "description": "Down then up then down gesture"
+  },
   "back": {
     "message": "Go Back",
     "description": "Back action"
