@@ -639,6 +639,7 @@ function getGestureTranslations() {
     'toggleMaximize': getI18nMessage('toggleMaximize', 'Maximize/Restore Window'),
     'minimizeWindow': getI18nMessage('minimizeWindow', 'Minimize Window'),
     'toggleFullscreen': getI18nMessage('toggleFullscreen', 'Toggle Fullscreen'),
+    'goParentUrl': getI18nMessage('goParentUrl', 'Go to Parent URL'),
     'newWindow': getI18nMessage('newWindow', 'New Window'),
     'newInPrivateWindow': getI18nMessage('newInPrivateWindow', 'New Private Window')
   };
@@ -3066,6 +3067,10 @@ function showGestureHint(action) {
       iconText = '⛶';
       iconColor = '#74c0fc';
       break;
+    case 'goParentUrl':
+      iconText = '↰';
+      iconColor = '#4dabf7';
+      break;
     case 'scrollToLeft':
       iconText = '⇤';
       iconColor = '#63e6be';
@@ -3412,6 +3417,26 @@ function executeGestureAction(gesture) {
 // 执行自定义手势动作
 function executeCustomGestureAction(action, gesture, resetGestureAfterAction) {
   switch (action) {
+    case 'goParentUrl': {
+      try {
+        const currentUrl = new URL(window.location.href);
+        let path = currentUrl.pathname || '/';
+        if (path.length > 1 && path.endsWith('/')) {
+          path = path.slice(0, -1);
+        }
+        const segments = path.split('/').filter(Boolean);
+        if (segments.length === 0) break;
+        segments.pop();
+        const parentPath = `/${segments.join('/')}${segments.length > 0 ? '/' : ''}`;
+        const targetUrl = `${currentUrl.origin}${parentPath}`;
+        window.location.assign(targetUrl);
+        showGestureHint(getGestureTranslations().goParentUrl);
+        resetGestureAfterAction();
+      } catch (e) {
+        // no-op
+      }
+      break;
+    }
     case 'scrollUp': {
       const isYouTube = window.location.hostname.includes('youtube.com');
       let upScrollDistance, upScrollPercentage;
@@ -3873,7 +3898,7 @@ function handleMouseMove(e) {
           case 'left then up then down':
           case 'up then down then up':
           case 'down then up then down':
-            actionKey = 'nextPage';
+            actionKey = 'goParentUrl';
             break;
           case 'right then right':
             actionKey = 'nextPage';
@@ -4029,6 +4054,9 @@ function handleMouseMove(e) {
               break;
             case 'toggleFullscreen':
               actionText = getGestureTranslations().toggleFullscreen;
+              break;
+            case 'goParentUrl':
+              actionText = getGestureTranslations().goParentUrl;
               break;
             case 'scrollToLeft':
               actionText = getGestureTranslations().scrollToLeft;

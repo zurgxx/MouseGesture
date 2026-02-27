@@ -231,6 +231,10 @@
     "message": "Toggle Fullscreen",
     "description": "Toggle fullscreen action"
   },
+  "goParentUrl": {
+    "message": "Go to Parent URL",
+    "description": "Go to parent URL action"
+  },
   "closeTabsToLeft": {
     "message": "Close Tabs to Left",
     "description": "Close tabs to left action"

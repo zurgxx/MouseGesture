@@ -231,6 +231,10 @@
     "message": "フルスクリーン切り替え",
     "description": "Toggle fullscreen action"
   },
+  "goParentUrl": {
+    "message": "親URLに進む",
+    "description": "Go to parent URL action"
+  },
   "closeTabsToLeft": {
     "message": "左のタブを閉じる",
     "description": "Close tabs to left action"
