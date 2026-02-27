@@ -718,65 +718,8 @@ function updateTextSearchPreviewOptions(enableTextSearch) {
 
 // 为所有滑块设置项添加鼠标滚轮控制
 function setupRangeWheelControl() {
-  // 获取所有range类型的输入元素
-  const rangeInputs = document.querySelectorAll('input[type="range"]');
-  
-  // 获取当前语言
-  const currentLang = getBrowserLanguage();
-  
-  rangeInputs.forEach(rangeInput => {
-    // 获取相应的值显示元素
-    const valueDisplay = document.getElementById(`${rangeInput.id}-value`);
-    // 获取步长，如果未设置则默认为1
-    const step = parseInt(rangeInput.step) || 1;
-    
-    // 为滑块的父元素添加滚轮事件监听器
-    rangeInput.parentElement.addEventListener('wheel', function(event) {
-      // 如果控件或父元素被禁用，则不处理滚轮事件
-      if (rangeInput.disabled || rangeInput.parentElement.classList.contains('no-hover-effect')) {
-        return;
-      }
-      
-      // 阻止页面滚动
-      event.preventDefault();
-      
-      // 获取当前值
-      let currentValue = parseInt(rangeInput.value);
-      
-      // 根据滚轮方向调整值（向上滚动增加，向下滚动减少）
-      if (event.deltaY < 0) {
-        // 向上滚动，增加值
-        currentValue = Math.min(parseInt(rangeInput.max), currentValue + step);
-      } else {
-        // 向下滚动，减少值
-        currentValue = Math.max(parseInt(rangeInput.min), currentValue - step);
-      }
-      
-      // 更新滑块值
-      rangeInput.value = currentValue;
-      
-      // 更新显示值
-      if (valueDisplay) {
-        valueDisplay.textContent = currentValue;
-      }
-      
-      // 触发change事件以保存设置
-      const changeEvent = new Event('change', { bubbles: true });
-      rangeInput.dispatchEvent(changeEvent);
-      
-      // 添加一个轻微的视觉反馈
-      rangeInput.classList.add('wheel-adjusted');
-      setTimeout(() => {
-        rangeInput.classList.remove('wheel-adjusted');
-      }, 200);
-    });
-    
-    // 添加鼠标悬停提示
-    rangeInput.parentElement.setAttribute('title', getI18nMessage('wheelTip'));
-  });
-  
-  // 更新延迟范围提示（如果需要）
-  updateDelayTitleForLanguage(currentLang);
+  // 用户反馈：滑块不应被鼠标滚轮误修改，保留函数仅用于兼容调用点
+  return;
 }
 
 // 根据触发按键的选择调整小窗延迟的范围
