@@ -34,6 +34,16 @@
           <input type="checkbox" id="enable-gesture" checked>
         </div>
         <div class="setting-item">
+          <label for="min-movement-to-start-gesture">ジェスチャー開始距離（px）</label>
+          <input type="range" id="min-movement-to-start-gesture" min="1" max="20" value="1">
+          <span id="min-movement-to-start-gesture-value">1</span>
+        </div>
+        <div class="setting-item">
+          <label for="min-gesture-distance">最小ジェスチャー距離（px）</label>
+          <input type="range" id="min-gesture-distance" min="1" max="40" value="3">
+          <span id="min-gesture-distance-value">3</span>
+        </div>
+        <div class="setting-item">
           <label for="gesture-trail" data-i18n="showGestureTrail">显示手势轨迹</label>
           <input type="checkbox" id="gesture-trail" checked>
         </div>

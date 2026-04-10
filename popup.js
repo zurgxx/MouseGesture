@@ -94,6 +94,8 @@ function handleSaveResponse() {
 // 默认设置
 const defaultSettings = {
   enableGesture: true,
+  minMovementToStartGesture: 1,
+  minGestureDistance: 3,
   showGestureTrail: true,
   showGestureHint: true,
   trailColor: '#FF9ECD',
@@ -223,6 +225,10 @@ function getI18nMessage(messageName, fallback = '') {
 
 // DOM 元素
 let enableGestureCheckbox = null;
+let minMovementToStartGestureInput = null;
+let minMovementToStartGestureValue = null;
+let minGestureDistanceInput = null;
+let minGestureDistanceValue = null;
 let gestureTrailCheckbox = null;
 let gestureHintCheckbox = null;
 let trailColorInput = null;
@@ -423,6 +429,8 @@ function loadSettings() {
   try {
     chrome.storage.sync.get({
       enableGesture: true, // 默认值，仅在首次安装时使用
+      minMovementToStartGesture: 1,
+      minGestureDistance: 3,
       showGestureTrail: true,
       showGestureHint: true,
       trailColor: '#FF9ECD',
@@ -483,6 +491,10 @@ function loadSettings() {
     }, function(items) {
       // 应用鼠标手势设置
       document.getElementById('enable-gesture').checked = items.enableGesture; // 从存储中读取真实状态
+      document.getElementById('min-movement-to-start-gesture').value = items.minMovementToStartGesture;
+      document.getElementById('min-movement-to-start-gesture-value').textContent = items.minMovementToStartGesture;
+      document.getElementById('min-gesture-distance').value = items.minGestureDistance;
+      document.getElementById('min-gesture-distance-value').textContent = items.minGestureDistance;
       document.getElementById('gesture-trail').checked = items.showGestureTrail;
       document.getElementById('gesture-hint').checked = items.showGestureHint;
       document.getElementById('trail-color').value = items.trailColor;
@@ -590,6 +602,8 @@ function loadSettings() {
 // 更新与手势相关的选项的启用/禁用状态
 function updateGestureRelatedOptions(enableGesture) {
   // 设置相关DOM元素的禁用状态
+  minMovementToStartGestureInput.disabled = !enableGesture;
+  minGestureDistanceInput.disabled = !enableGesture;
   gestureTrailCheckbox.disabled = !enableGesture;
   gestureHintCheckbox.disabled = !enableGesture;
   trailColorInput.disabled = !enableGesture;
@@ -597,6 +611,8 @@ function updateGestureRelatedOptions(enableGesture) {
   
   // 更新视觉反馈
   const gestureRelatedOptions = [
+    minMovementToStartGestureInput.parentElement,
+    minGestureDistanceInput.parentElement,
     gestureTrailCheckbox.parentElement,
     gestureHintCheckbox.parentElement,
     trailColorInput.parentElement,
@@ -834,6 +850,8 @@ function notifySettingsUpdated() {
 function getSettingsSnapshot() {
   return {
     enableGesture: enableGestureCheckbox.checked,
+    minMovementToStartGesture: parseInt(minMovementToStartGestureInput.value, 10),
+    minGestureDistance: parseInt(minGestureDistanceInput.value, 10),
     showGestureTrail: gestureTrailCheckbox.checked,
     showGestureHint: gestureHintCheckbox.checked,
     trailColor: trailColorInput.value,
@@ -976,6 +994,10 @@ function resetSettings() {
       document.getElementById('preview-position').value = resetConfig.previewPosition;
       document.getElementById('preview-search-engine').value = resetConfig.previewSearchEngine;
       document.getElementById('text-search-preview').checked = resetConfig.enableTextSearchPreview;
+      document.getElementById('min-movement-to-start-gesture').value = resetConfig.minMovementToStartGesture;
+      document.getElementById('min-movement-to-start-gesture-value').textContent = resetConfig.minMovementToStartGesture;
+      document.getElementById('min-gesture-distance').value = resetConfig.minGestureDistance;
+      document.getElementById('min-gesture-distance-value').textContent = resetConfig.minGestureDistance;
       // 更新调试面板状态
       debugEnabledState = resetConfig.enableDebugPanel;
       const debugIcon = document.getElementById('enable-debug-panel-icon');
@@ -1098,7 +1120,7 @@ function importSettings(settings) {
     // 验证并清理设置数据
     const validSettings = {};
     const allowedKeys = [
-      'enableGesture', 'showGestureTrail', 'showGestureHint', 'trailColor', 'trailWidth',
+      'enableGesture', 'minMovementToStartGesture', 'minGestureDistance', 'showGestureTrail', 'showGestureHint', 'trailColor', 'trailWidth',
       'enableSuperDrag', 'enableDragTextSearch', 'autoDownloadOnDragFile', 'enableImagePreview', 'enableDuplicateCheck',
       'autoCloseDetectedTabs', 'enableSmoothScroll', 'enableDebugPanel', 'showTabCountBadge',
       'language', 'theme',
@@ -1150,6 +1172,14 @@ function updateTrailWidthValue() {
   trailWidthValue.textContent = trailWidthInput.value;
 }
 
+function updateMinMovementToStartGestureValue() {
+  minMovementToStartGestureValue.textContent = minMovementToStartGestureInput.value;
+}
+
+function updateMinGestureDistanceValue() {
+  minGestureDistanceValue.textContent = minGestureDistanceInput.value;
+}
+
 // 显示扩展版本号
 function displayExtensionVersion() {
   const versionInfo = document.getElementById('version-info');
@@ -1194,6 +1224,10 @@ function populateExtendedGestureActionOptions() {
 document.addEventListener('DOMContentLoaded', function() {
   // 初始化DOM元素引用
   enableGestureCheckbox = document.getElementById('enable-gesture');
+  minMovementToStartGestureInput = document.getElementById('min-movement-to-start-gesture');
+  minMovementToStartGestureValue = document.getElementById('min-movement-to-start-gesture-value');
+  minGestureDistanceInput = document.getElementById('min-gesture-distance');
+  minGestureDistanceValue = document.getElementById('min-gesture-distance-value');
   gestureTrailCheckbox = document.getElementById('gesture-trail');
   gestureHintCheckbox = document.getElementById('gesture-hint');
   trailColorInput = document.getElementById('trail-color');
@@ -1240,6 +1274,14 @@ document.addEventListener('DOMContentLoaded', function() {
   // 使用公共函数重构事件监听器
   CommonUtils.addChangeListener('gesture-trail', saveSettings);
   CommonUtils.addChangeListener('gesture-hint', saveSettings);
+  CommonUtils.addInputListener('min-movement-to-start-gesture', 'min-movement-to-start-gesture-value', updateMinMovementToStartGestureValue);
+  CommonUtils.addInputListener('min-gesture-distance', 'min-gesture-distance-value', updateMinGestureDistanceValue);
+  document.getElementById('min-movement-to-start-gesture').addEventListener('change', function() {
+    saveSettingsImmediate();
+  });
+  document.getElementById('min-gesture-distance').addEventListener('change', function() {
+    saveSettingsImmediate();
+  });
   
   // 颜色设置需要立即保存
   document.getElementById('trail-color').addEventListener('change', function() {

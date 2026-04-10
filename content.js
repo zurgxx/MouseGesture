@@ -538,9 +538,9 @@ let gestureStartX = 0;
 let gestureStartY = 0;
 let gestureCanvas = null;
 let gestureContext = null;
-let minGestureDistance = 3; // 手势最小距离，从5减小到3，极大提高对微小幅度手势的敏感度
+let minGestureDistance = 3; // 手势最小距离，可通过设置调整
 let isRightMouseDown = false; // 跟踪右键是否按下
-let minMovementToStartGesture = 1; // 启动手势的最小移动阈值，从2减小到1，几乎立即开始手势
+let minMovementToStartGesture = 1; // 启动手势的最小移动阈值，可通过设置调整
 let angleThreshold = 0.8; // 角度阈值调整为0.8（约36度），平衡精确度和容错性
 let smoothingFactor = 0.2; // 平滑因子，减小到0.2，减少平滑强度
 let minDirectionSegmentLength = 5; // 最小方向段长度从10降低到5，极大增强对超短距离手势的识别
@@ -1149,6 +1149,8 @@ function loadSettings() {
   try {
     chrome.storage.sync.get({
       enableGesture: true,
+      minMovementToStartGesture: 1,
+      minGestureDistance: 3,
       showGestureTrail: true,
       showGestureHint: true,
       trailColor: '#FF9ECD',
@@ -1198,6 +1200,12 @@ function loadSettings() {
       
       // 直接更新设置，不再检查语言是否变化，也不显示提示
       settings = loadedSettings;
+      minMovementToStartGesture = Number.isFinite(loadedSettings.minMovementToStartGesture)
+        ? loadedSettings.minMovementToStartGesture
+        : 1;
+      minGestureDistance = Number.isFinite(loadedSettings.minGestureDistance)
+        ? loadedSettings.minGestureDistance
+        : 3;
       
       // 如果手势被禁用，确保清理任何现有的手势状态
       if (!settings.enableGesture) {
@@ -5683,6 +5691,8 @@ function loadSettingsWithLanguageChange(newLanguage) {
   try {
     chrome.storage.sync.get({
       enableGesture: true,
+      minMovementToStartGesture: 1,
+      minGestureDistance: 3,
       showGestureTrail: true,
       showGestureHint: true,
       trailColor: '#FF9ECD',
@@ -5709,6 +5719,12 @@ function loadSettingsWithLanguageChange(newLanguage) {
       
       // 更新设置
       settings = loadedSettings;
+      minMovementToStartGesture = Number.isFinite(loadedSettings.minMovementToStartGesture)
+        ? loadedSettings.minMovementToStartGesture
+        : 1;
+      minGestureDistance = Number.isFinite(loadedSettings.minGestureDistance)
+        ? loadedSettings.minGestureDistance
+        : 3;
       
       // 重置上一次提示的动作以确保下次显示提示时使用新语言
       lastHintAction = '';
