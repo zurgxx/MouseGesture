@@ -3436,8 +3436,8 @@ function executeCustomGestureAction(action, gesture, resetGestureAfterAction) {
         if (segments.length === 0) break;
         segments.pop();
         const parentPath = `/${segments.join('/')}${segments.length > 0 ? '/' : ''}`;
-        const targetUrl = `${currentUrl.origin}${parentPath}`;
-        window.location.assign(targetUrl);
+        currentUrl.pathname = parentPath;
+        window.location.assign(currentUrl.href);
         showGestureHint(getGestureTranslations().goParentUrl);
         resetGestureAfterAction();
       } catch (e) {
